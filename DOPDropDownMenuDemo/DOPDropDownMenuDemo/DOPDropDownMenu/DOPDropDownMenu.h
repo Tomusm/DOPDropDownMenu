@@ -55,6 +55,9 @@
  *  @return menu
  */
 - (instancetype)initWithOrigin:(CGPoint)origin andHeight:(CGFloat)height;
+
+- (instancetype)initWithFrame:(CGRect)frame;
+
 - (NSString *)titleForRowAtIndexPath:(DOPIndexPath *)indexPath;
 
 //programmatically dismiss

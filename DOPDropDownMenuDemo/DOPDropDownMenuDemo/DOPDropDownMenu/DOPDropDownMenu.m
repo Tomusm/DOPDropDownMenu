@@ -294,18 +294,24 @@
 }
 
 - (void)animateTableView:(UITableView *)tableView show:(BOOL)show complete:(void(^)())complete {
+    CGFloat yStart = self.frame.origin.y + self.frame.size.height;
+    CGFloat yFinal = self.frame.origin.y + self.frame.size.height;
+    CGFloat tableViewHeight = ([tableView numberOfRowsInSection:0] > 5) ? (5 * tableView.rowHeight) : ([tableView numberOfRowsInSection:0] * tableView.rowHeight);
+    if (self.menuDirection != DOPDirectionDown) {
+        yStart = self.frame.origin.y;
+        yFinal = self.frame.origin.y-tableViewHeight;
+    }
+    
     if (show) {
-        tableView.frame = CGRectMake(self.origin.x, self.frame.origin.y + self.frame.size.height, self.frame.size.width, 0);
+        tableView.frame = CGRectMake(self.origin.x, yStart, self.frame.size.width, 0);
         [self.superview addSubview:tableView];
         
-        CGFloat tableViewHeight = ([tableView numberOfRowsInSection:0] > 5) ? (5 * tableView.rowHeight) : ([tableView numberOfRowsInSection:0] * tableView.rowHeight);
-        
         [UIView animateWithDuration:0.2 animations:^{
-            _tableView.frame = CGRectMake(self.origin.x, self.frame.origin.y + self.frame.size.height, self.frame.size.width, tableViewHeight);
+            _tableView.frame = CGRectMake(self.origin.x, yFinal, self.frame.size.width, tableViewHeight);
         }];
     } else {
         [UIView animateWithDuration:0.2 animations:^{
-            _tableView.frame = CGRectMake(self.origin.x, self.frame.origin.y + self.frame.size.height, self.frame.size.width, 0);
+            _tableView.frame = CGRectMake(self.origin.x, yStart, self.frame.size.width, 0);
         } completion:^(BOOL finished) {
             [tableView removeFromSuperview];
         }];

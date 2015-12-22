@@ -35,6 +35,9 @@
 @property (nonatomic, strong) UITableView *tableView;
 //data source
 @property (nonatomic, copy) NSArray *array;
+
+@property (nonatomic, strong) NSArray *placeholders;
+
 //layers array
 @property (nonatomic, copy) NSArray *titles;
 @property (nonatomic, copy) NSArray *indicators;
@@ -97,6 +100,14 @@
         //title
         CGPoint titlePosition = CGPointMake( (i * 2 + 1) * textLayerInterval , self.frame.size.height / 2);
         NSString *titleString = [_dataSource menu:self titleForRowAtIndexPath:[DOPIndexPath indexPathWithCol:i row:0]];
+        // If the placeHolder is not nil we use it
+        if ([_dataSource respondsToSelector:@selector(menu:placeHolderForColumn:)]) {
+            NSString *placeHolder = [_dataSource menu:self placeHolderForColumn:i];
+            if (placeHolder) {
+                titleString = placeHolder;
+            }
+        }
+        
         CATextLayer *title = [self createTextLayerWithNSString:titleString withColor:self.textColor andPosition:titlePosition];
         [self.layer addSublayer:title];
         [tempTitles addObject:title];

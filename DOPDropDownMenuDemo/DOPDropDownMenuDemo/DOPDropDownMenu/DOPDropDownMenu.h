@@ -29,6 +29,10 @@
 //default value is 1
 - (NSInteger)numberOfColumnsInMenu:(DOPDropDownMenu *)menu;
 
+/**
+* If the placeHolder is nil, it will use the first title of the column
+*/
+- (NSString *)menu:(DOPDropDownMenu *)menu placeHolderForColumn:(NSInteger)column;
 @end
 
 #pragma mark - delegate

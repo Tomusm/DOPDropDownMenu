@@ -154,6 +154,14 @@
     [self.tableView reloadData];
 }
 
+- (NSString *)menu:(DOPDropDownMenu *)menu placeHolderForColumn:(NSInteger)column {
+    NSString *placeHolder = nil;
+    if (column == 0) {
+        placeHolder = @"PlaceHolder";
+    }
+    return placeHolder;
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.results.count;
 }

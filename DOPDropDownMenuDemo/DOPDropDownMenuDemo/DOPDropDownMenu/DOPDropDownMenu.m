@@ -296,7 +296,12 @@
 - (void)animateTableView:(UITableView *)tableView show:(BOOL)show complete:(void(^)())complete {
     CGFloat yStart = self.frame.origin.y + self.frame.size.height;
     CGFloat yFinal = self.frame.origin.y + self.frame.size.height;
-    CGFloat tableViewHeight = ([tableView numberOfRowsInSection:0] > 5) ? (5 * tableView.rowHeight) : ([tableView numberOfRowsInSection:0] * tableView.rowHeight);
+    CGFloat tableViewRowHeight = tableView.rowHeight;
+    if (tableViewRowHeight == UITableViewAutomaticDimension) {
+        tableViewRowHeight = tableView.estimatedRowHeight;
+    }
+    
+    CGFloat tableViewHeight = ([tableView numberOfRowsInSection:0] > 5) ? (5 * tableViewRowHeight) : ([tableView numberOfRowsInSection:0] * tableViewRowHeight);
     if (self.menuDirection != DOPDirectionDown) {
         yStart = self.frame.origin.y;
         yFinal = self.frame.origin.y-tableViewHeight;
@@ -354,26 +359,36 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *identifier = @"DropDownMenuCell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+    UITableViewCell *cell = nil;
+    if ([self.dataSource respondsToSelector:@selector(menu:cellForRowAtIndexPath:)]) {
+        cell = [self.dataSource menu:self cellForRowAtIndexPath:[DOPIndexPath indexPathWithCol:self.currentSelectedMenudIndex row:indexPath.row]];
+    }
+    
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+        static NSString *identifier = @"DropDownMenuCell";
+        cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+        if (!cell) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+        }
+        NSAssert(self.dataSource != nil, @"menu's datasource shouldn't be nil");
+        if ([self.dataSource respondsToSelector:@selector(menu:titleForRowAtIndexPath:)]) {
+            cell.textLabel.text = [self.dataSource menu:self titleForRowAtIndexPath:[DOPIndexPath indexPathWithCol:self.currentSelectedMenudIndex row:indexPath.row]];
+        } else {
+            NSAssert(0 == 1, @"dataSource method needs to be implemented");
+        }
+        cell.backgroundColor = [UIColor whiteColor];
+        cell.textLabel.font = [UIFont systemFontOfSize:14.0];
+        cell.separatorInset = UIEdgeInsetsZero;
+        
+        if ([cell.textLabel.text isEqualToString: [(CATextLayer *)[_titles objectAtIndex:_currentSelectedMenudIndex] string]]) {
+            cell.backgroundColor = [UIColor colorWithWhite:0.9 alpha:1.0];
+        }
     }
-    NSAssert(self.dataSource != nil, @"menu's datasource shouldn't be nil");
-    if ([self.dataSource respondsToSelector:@selector(menu:titleForRowAtIndexPath:)]) {
-        cell.textLabel.text = [self.dataSource menu:self titleForRowAtIndexPath:[DOPIndexPath indexPathWithCol:self.currentSelectedMenudIndex row:indexPath.row]];
-    } else {
-        NSAssert(0 == 1, @"dataSource method needs to be implemented");
-    }
-    cell.backgroundColor = [UIColor whiteColor];
-    cell.textLabel.font = [UIFont systemFontOfSize:14.0];
-    cell.separatorInset = UIEdgeInsetsZero;
-    
-    if ([cell.textLabel.text isEqualToString: [(CATextLayer *)[_titles objectAtIndex:_currentSelectedMenudIndex] string]]) {
-        cell.backgroundColor = [UIColor colorWithWhite:0.9 alpha:1.0];
-    }
-    
     return cell;
+}
+
+-(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    [cell setBackgroundColor:cell.contentView.backgroundColor];
 }
 
 #pragma mark - tableview delegate

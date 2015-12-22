@@ -34,6 +34,11 @@ typedef enum {
 //default value is 1
 - (NSInteger)numberOfColumnsInMenu:(DOPDropDownMenu *)menu;
 
+/**
+ * If the cell returned is not nil, the tableView will display it.
+ * Otherwise it will display the default cell
+**/
+- (UITableViewCell *)menu:(DOPDropDownMenu *)menu cellForRowAtIndexPath:(DOPIndexPath *)indexPath;
 @end
 
 #pragma mark - delegate
@@ -51,6 +56,12 @@ typedef enum {
 @property (nonatomic, strong) UIColor *indicatorColor;
 @property (nonatomic, strong) UIColor *textColor;
 @property (nonatomic, strong) UIColor *separatorColor;
+
+@property (nonatomic, strong) UIImageView *customIndicatorView;
+
+@property (nonatomic, strong) UIFont *titleFont;
+
+@property (nonatomic, strong, readonly) UITableView *tableView;
 
 /**
  * Define the menu showing direction

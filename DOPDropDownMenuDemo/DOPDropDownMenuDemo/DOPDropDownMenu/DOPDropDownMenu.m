@@ -7,6 +7,7 @@
 //
 
 #import "DOPDropDownMenu.h"
+#import <CoreText/CoreText.h>
 
 @implementation DOPIndexPath
 - (instancetype)initWithColumn:(NSInteger)column row:(NSInteger)row {
@@ -39,6 +40,13 @@
 @property (nonatomic, copy) NSArray *titles;
 @property (nonatomic, copy) NSArray *indicators;
 @property (nonatomic, copy) NSArray *bgLayers;
+
+/**
+ Is equal to customIndicatorView.frame.origin.x
+ @default 8
+**/
+@property (nonatomic, assign) CGFloat indicatorXOffset;
+
 @end
 
 
@@ -64,6 +72,13 @@
         _separatorColor = [UIColor blackColor];
     }
     return _separatorColor;
+}
+
+- (UIFont *)titleFont {
+    if (!_titleFont) {
+        _titleFont = [UIFont systemFontOfSize:14];
+    }
+    return _titleFont;
 }
 
 - (NSString *)titleForRowAtIndexPath:(DOPIndexPath *)indexPath {
@@ -100,10 +115,28 @@
         CATextLayer *title = [self createTextLayerWithNSString:titleString withColor:self.textColor andPosition:titlePosition];
         [self.layer addSublayer:title];
         [tempTitles addObject:title];
-        //indicator
-        CAShapeLayer *indicator = [self createIndicatorWithColor:self.indicatorColor andPosition:CGPointMake(titlePosition.x + title.bounds.size.width / 2 + 8, self.frame.size.height / 2)];
-        [self.layer addSublayer:indicator];
-        [tempIndicators addObject:indicator];
+        
+        if (self.customIndicatorView) {
+            self.indicatorXOffset = self.customIndicatorView.frame.origin.x;
+            CALayer *layer = [CALayer layer];
+            CGRect rect = CGRectMake(titlePosition.x + (title.bounds.size.width/2)  + self.indicatorXOffset, self.customIndicatorView.frame.origin.y, self.customIndicatorView.frame.size.width, self.customIndicatorView.frame.size.height);
+            [layer setContents:(id)self.customIndicatorView.image.CGImage];
+            // Ici on set la size
+            [layer setFrame:rect];
+            // Ici on set la bonne position
+            [layer setPosition:CGPointMake(titlePosition.x + title.bounds.size.width / 2 + self.indicatorXOffset, self.customIndicatorView.frame.origin.y)];
+
+            [self.layer addSublayer:layer];
+            [tempIndicators addObject:layer];
+        }
+        else {
+#warning Faire mieux ?!
+            self.indicatorXOffset = 8;
+            //indicator
+            CAShapeLayer *indicator = [self createIndicatorWithColor:self.indicatorColor andPosition:CGPointMake(titlePosition.x + title.bounds.size.width / 2 + self.indicatorXOffset, self.frame.size.height / 2)];
+            [self.layer addSublayer:indicator];
+            [tempIndicators addObject:indicator];
+        }
     }
     _titles = [tempTitles copy];
     _indicators = [tempIndicators copy];
@@ -191,13 +224,12 @@
     CGSize size = [self calculateTitleSizeWithString:string];
     
     CATextLayer *layer = [CATextLayer new];
-    CGFloat sizeWidth = (size.width < (self.frame.size.width / _numOfMenu) - 25) ? size.width : self.frame.size.width / _numOfMenu - 25;
-    layer.bounds = CGRectMake(0, 0, sizeWidth, size.height);
+    layer.bounds = CGRectMake(0, 0, size.width, size.height);
     layer.string = string;
-    layer.fontSize = 14.0;
+    layer.font = CTFontCreateWithName((__bridge CFStringRef)self.titleFont.fontName, self.titleFont.pointSize, NULL);
+    layer.fontSize = self.titleFont.pointSize;
     layer.alignmentMode = kCAAlignmentCenter;
     layer.foregroundColor = color.CGColor;
-    
     layer.contentsScale = [[UIScreen mainScreen] scale];
     
     layer.position = point;
@@ -207,9 +239,10 @@
 
 - (CGSize)calculateTitleSizeWithString:(NSString *)string
 {
-    CGFloat fontSize = 14.0;
-    NSDictionary *dic = @{NSFontAttributeName: [UIFont systemFontOfSize:fontSize]};
+    NSDictionary *dic = @{NSFontAttributeName: self.titleFont};
+#warning magic number
     CGSize size = [string boundingRectWithSize:CGSizeMake(280, 0) options:NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:dic context:nil].size;
+    size.width = (size.width < (self.frame.size.width / _numOfMenu) - 25) ? size.width : self.frame.size.width / _numOfMenu - 25;
     return size;
 }
 
@@ -296,7 +329,12 @@
 - (void)animateTableView:(UITableView *)tableView show:(BOOL)show complete:(void(^)())complete {
     CGFloat yStart = self.frame.origin.y + self.frame.size.height;
     CGFloat yFinal = self.frame.origin.y + self.frame.size.height;
-    CGFloat tableViewHeight = ([tableView numberOfRowsInSection:0] > 5) ? (5 * tableView.rowHeight) : ([tableView numberOfRowsInSection:0] * tableView.rowHeight);
+    CGFloat tableViewRowHeight = tableView.rowHeight;
+    if (tableViewRowHeight == UITableViewAutomaticDimension) {
+        tableViewRowHeight = tableView.estimatedRowHeight;
+    }
+    
+    CGFloat tableViewHeight = ([tableView numberOfRowsInSection:0] > 5) ? (5 * tableViewRowHeight) : ([tableView numberOfRowsInSection:0] * tableViewRowHeight);
     if (self.menuDirection != DOPDirectionDown) {
         yStart = self.frame.origin.y;
         yFinal = self.frame.origin.y-tableViewHeight;
@@ -319,11 +357,15 @@
     complete();
 }
 
+#warning rename to resizeTitle ?
 - (void)animateTitle:(CATextLayer *)title show:(BOOL)show complete:(void(^)())complete {
     CGSize size = [self calculateTitleSizeWithString:title.string];
-    CGFloat sizeWidth = (size.width < (self.frame.size.width / _numOfMenu) - 25) ? size.width : self.frame.size.width / _numOfMenu - 25;
-    title.bounds = CGRectMake(0, 0, sizeWidth, size.height);
-    complete();
+
+    title.bounds = CGRectMake(0, 0, size.width, size.height);
+    if (complete) {
+        complete();
+    }
+
 }
 
 - (void)animateIdicator:(CAShapeLayer *)indicator background:(UIView *)background tableView:(UITableView *)tableView title:(CATextLayer *)title forward:(BOOL)forward complecte:(void(^)())complete{
@@ -354,26 +396,36 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *identifier = @"DropDownMenuCell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+    UITableViewCell *cell = nil;
+    if ([self.dataSource respondsToSelector:@selector(menu:cellForRowAtIndexPath:)]) {
+        cell = [self.dataSource menu:self cellForRowAtIndexPath:[DOPIndexPath indexPathWithCol:self.currentSelectedMenudIndex row:indexPath.row]];
+    }
+    
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+        static NSString *identifier = @"DropDownMenuCell";
+        cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+        if (!cell) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+        }
+        NSAssert(self.dataSource != nil, @"menu's datasource shouldn't be nil");
+        if ([self.dataSource respondsToSelector:@selector(menu:titleForRowAtIndexPath:)]) {
+            cell.textLabel.text = [self.dataSource menu:self titleForRowAtIndexPath:[DOPIndexPath indexPathWithCol:self.currentSelectedMenudIndex row:indexPath.row]];
+        } else {
+            NSAssert(0 == 1, @"dataSource method needs to be implemented");
+        }
+        cell.backgroundColor = [UIColor whiteColor];
+        cell.textLabel.font = [UIFont systemFontOfSize:14.0];
+        cell.separatorInset = UIEdgeInsetsZero;
+        
+        if ([cell.textLabel.text isEqualToString: [(CATextLayer *)[_titles objectAtIndex:_currentSelectedMenudIndex] string]]) {
+            cell.backgroundColor = [UIColor colorWithWhite:0.9 alpha:1.0];
+        }
     }
-    NSAssert(self.dataSource != nil, @"menu's datasource shouldn't be nil");
-    if ([self.dataSource respondsToSelector:@selector(menu:titleForRowAtIndexPath:)]) {
-        cell.textLabel.text = [self.dataSource menu:self titleForRowAtIndexPath:[DOPIndexPath indexPathWithCol:self.currentSelectedMenudIndex row:indexPath.row]];
-    } else {
-        NSAssert(0 == 1, @"dataSource method needs to be implemented");
-    }
-    cell.backgroundColor = [UIColor whiteColor];
-    cell.textLabel.font = [UIFont systemFontOfSize:14.0];
-    cell.separatorInset = UIEdgeInsetsZero;
-    
-    if ([cell.textLabel.text isEqualToString: [(CATextLayer *)[_titles objectAtIndex:_currentSelectedMenudIndex] string]]) {
-        cell.backgroundColor = [UIColor colorWithWhite:0.9 alpha:1.0];
-    }
-    
     return cell;
+}
+
+-(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    [cell setBackgroundColor:cell.contentView.backgroundColor];
 }
 
 #pragma mark - tableview delegate
@@ -394,7 +446,7 @@
     [(CALayer *)self.bgLayers[_currentSelectedMenudIndex] setBackgroundColor:[UIColor whiteColor].CGColor];
     
     CAShapeLayer *indicator = (CAShapeLayer *)_indicators[_currentSelectedMenudIndex];
-    indicator.position = CGPointMake(title.position.x + title.frame.size.width / 2 + 8, indicator.position.y);
+    indicator.position = CGPointMake(title.position.x + (title.frame.size.width/2)  +  self.indicatorXOffset, indicator.position.y);
 }
 
 - (void)dismiss {

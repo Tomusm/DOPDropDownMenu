@@ -16,6 +16,10 @@
 		8771796E19D85D9D00BA232E /* DOPDropDownMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 8771796D19D85D9D00BA232E /* DOPDropDownMenu.m */; };
 		87BFBE1E19D5176C001DB348 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 87BFBE1C19D5176C001DB348 /* Localizable.strings */; };
 		87BFBE2119D51778001DB348 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 87BFBE1F19D51778001DB348 /* Localizable.strings */; };
+		E9EB441A1C294C0200433477 /* CustomTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E9EB44181C294C0200433477 /* CustomTableViewCell.m */; };
+		E9EB441B1C294C0200433477 /* CustomTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = E9EB44191C294C0200433477 /* CustomTableViewCell.xib */; };
+		E9EB441D1C2954EA00433477 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9EB441C1C2954EA00433477 /* CoreText.framework */; };
+		E9EB441F1C29589D00433477 /* productHeaderClose.png in Resources */ = {isa = PBXBuildFile; fileRef = E9EB441E1C29589D00433477 /* productHeaderClose.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +49,11 @@
 		8771796D19D85D9D00BA232E /* DOPDropDownMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DOPDropDownMenu.m; sourceTree = "<group>"; };
 		87BFBE1D19D5176C001DB348 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		87BFBE2019D51778001DB348 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		E9EB44171C294C0200433477 /* CustomTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CustomTableViewCell.h; path = CustomCell/CustomTableViewCell.h; sourceTree = "<group>"; };
+		E9EB44181C294C0200433477 /* CustomTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CustomTableViewCell.m; path = CustomCell/CustomTableViewCell.m; sourceTree = "<group>"; };
+		E9EB44191C294C0200433477 /* CustomTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CustomTableViewCell.xib; path = CustomCell/CustomTableViewCell.xib; sourceTree = "<group>"; };
+		E9EB441C1C2954EA00433477 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		E9EB441E1C29589D00433477 /* productHeaderClose.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = productHeaderClose.png; path = "../../../../RoedererV2/assets/Nos vins/productHeaderClose.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E9EB441D1C2954EA00433477 /* CoreText.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,6 +78,7 @@
 		87527AA319D503A200D56994 = {
 			isa = PBXGroup;
 			children = (
+				E9EB441C1C2954EA00433477 /* CoreText.framework */,
 				87527AAE19D503A200D56994 /* DOPDropDownMenuDemo */,
 				87527AC819D503A200D56994 /* DOPDropDownMenuDemoTests */,
 				87527AAD19D503A200D56994 /* Products */,
@@ -86,11 +97,13 @@
 		87527AAE19D503A200D56994 /* DOPDropDownMenuDemo */ = {
 			isa = PBXGroup;
 			children = (
+				E9EB44161C294B9C00433477 /* Custom Cell */,
 				8771796B19D85D9D00BA232E /* DOPDropDownMenu */,
 				87527AB319D503A200D56994 /* AppDelegate.h */,
 				87527AB419D503A200D56994 /* AppDelegate.m */,
 				87527AB619D503A200D56994 /* ViewController.h */,
 				87527AB719D503A200D56994 /* ViewController.m */,
+				E9EB441E1C29589D00433477 /* productHeaderClose.png */,
 				87527AB919D503A200D56994 /* Main.storyboard */,
 				87527ABC19D503A200D56994 /* Images.xcassets */,
 				87527AAF19D503A200D56994 /* Supporting Files */,
@@ -149,6 +162,16 @@
 				87BFBE1F19D51778001DB348 /* Localizable.strings */,
 			);
 			name = en.lproj;
+			sourceTree = "<group>";
+		};
+		E9EB44161C294B9C00433477 /* Custom Cell */ = {
+			isa = PBXGroup;
+			children = (
+				E9EB44171C294C0200433477 /* CustomTableViewCell.h */,
+				E9EB44181C294C0200433477 /* CustomTableViewCell.m */,
+				E9EB44191C294C0200433477 /* CustomTableViewCell.xib */,
+			);
+			name = "Custom Cell";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -235,7 +258,9 @@
 				87527ABB19D503A200D56994 /* Main.storyboard in Resources */,
 				87BFBE2119D51778001DB348 /* Localizable.strings in Resources */,
 				87BFBE1E19D5176C001DB348 /* Localizable.strings in Resources */,
+				E9EB441B1C294C0200433477 /* CustomTableViewCell.xib in Resources */,
 				87527ABD19D503A200D56994 /* Images.xcassets in Resources */,
+				E9EB441F1C29589D00433477 /* productHeaderClose.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,6 +281,7 @@
 				87527AB819D503A200D56994 /* ViewController.m in Sources */,
 				8771796E19D85D9D00BA232E /* DOPDropDownMenu.m in Sources */,
 				87527AB519D503A200D56994 /* AppDelegate.m in Sources */,
+				E9EB441A1C294C0200433477 /* CustomTableViewCell.m in Sources */,
 				87527AB219D503A200D56994 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

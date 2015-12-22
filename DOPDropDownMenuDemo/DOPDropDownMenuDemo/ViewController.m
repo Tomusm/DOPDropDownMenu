@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "DOPDropDownMenu.h"
+#import "CustomTableViewCell.h"
 
 @interface ViewController ()<DOPDropDownMenuDataSource, DOPDropDownMenuDelegate, UITableViewDataSource>
 @property (nonatomic, copy) NSArray *citys;
@@ -44,8 +45,17 @@
     self.results = self.originalArray;
     
     DOPDropDownMenu *menu = [[DOPDropDownMenu alloc] initWithOrigin:CGPointMake(0, 64) andHeight:40];
+    [menu setTitleFont:[UIFont fontWithName:@"Helvetica" size:12]];
+    [menu setTextColor:[UIColor redColor]];
+    
     menu.dataSource = self;
     menu.delegate = self;
+    
+    // Register custom cell nib
+    [[menu tableView] registerNib:[UINib nibWithNibName:NSStringFromClass([CustomTableViewCell class]) bundle:[NSBundle mainBundle]] forCellReuseIdentifier:NSStringFromClass([CustomTableViewCell class])];
+    [[menu tableView] setRowHeight:UITableViewAutomaticDimension];
+    [[menu tableView] setEstimatedRowHeight:44];
+    
     [self.view addSubview:menu];
     self.menu = menu;
     
@@ -88,6 +98,14 @@
             break;
     }
 }
+
+- (UITableViewCell *)menu:(DOPDropDownMenu *)menu cellForRowAtIndexPath:(DOPIndexPath *)indexPath {
+    CustomTableViewCell *cell = [menu.tableView dequeueReusableCellWithIdentifier:NSStringFromClass([CustomTableViewCell class])];
+    
+    [cell setTitle:[self menu:menu titleForRowAtIndexPath:indexPath]];
+    return cell;
+}
+
 
 - (void)menu:(DOPDropDownMenu *)menu didSelectRowAtIndexPath:(DOPIndexPath *)indexPath {
     NSLog(@"column:%li row:%li", (long)indexPath.column, (long)indexPath.row);

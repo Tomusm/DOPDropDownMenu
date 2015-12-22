@@ -7,6 +7,7 @@
 //
 
 #import "DOPDropDownMenu.h"
+#import <CoreText/CoreText.h>
 
 @implementation DOPIndexPath
 - (instancetype)initWithColumn:(NSInteger)column row:(NSInteger)row {
@@ -64,6 +65,13 @@
         _separatorColor = [UIColor blackColor];
     }
     return _separatorColor;
+}
+
+- (UIFont *)titleFont {
+    if (!_titleFont) {
+        _titleFont = [UIFont systemFontOfSize:14];
+    }
+    return _titleFont;
 }
 
 - (NSString *)titleForRowAtIndexPath:(DOPIndexPath *)indexPath {
@@ -194,7 +202,8 @@
     CGFloat sizeWidth = (size.width < (self.frame.size.width / _numOfMenu) - 25) ? size.width : self.frame.size.width / _numOfMenu - 25;
     layer.bounds = CGRectMake(0, 0, sizeWidth, size.height);
     layer.string = string;
-    layer.fontSize = 14.0;
+    layer.font = CTFontCreateWithName((__bridge CFStringRef)self.titleFont.fontName, self.titleFont.pointSize, NULL);
+    layer.fontSize = self.titleFont.pointSize;
     layer.alignmentMode = kCAAlignmentCenter;
     layer.foregroundColor = color.CGColor;
     
@@ -207,8 +216,8 @@
 
 - (CGSize)calculateTitleSizeWithString:(NSString *)string
 {
-    CGFloat fontSize = 14.0;
-    NSDictionary *dic = @{NSFontAttributeName: [UIFont systemFontOfSize:fontSize]};
+    NSDictionary *dic = @{NSFontAttributeName: self.titleFont};
+#warning magic number
     CGSize size = [string boundingRectWithSize:CGSizeMake(280, 0) options:NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:dic context:nil].size;
     return size;
 }

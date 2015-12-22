@@ -18,6 +18,7 @@
 		87BFBE2119D51778001DB348 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 87BFBE1F19D51778001DB348 /* Localizable.strings */; };
 		E9EB441A1C294C0200433477 /* CustomTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E9EB44181C294C0200433477 /* CustomTableViewCell.m */; };
 		E9EB441B1C294C0200433477 /* CustomTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = E9EB44191C294C0200433477 /* CustomTableViewCell.xib */; };
+		E9EB441D1C2954EA00433477 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9EB441C1C2954EA00433477 /* CoreText.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,6 +51,7 @@
 		E9EB44171C294C0200433477 /* CustomTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CustomTableViewCell.h; path = CustomCell/CustomTableViewCell.h; sourceTree = "<group>"; };
 		E9EB44181C294C0200433477 /* CustomTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CustomTableViewCell.m; path = CustomCell/CustomTableViewCell.m; sourceTree = "<group>"; };
 		E9EB44191C294C0200433477 /* CustomTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CustomTableViewCell.xib; path = CustomCell/CustomTableViewCell.xib; sourceTree = "<group>"; };
+		E9EB441C1C2954EA00433477 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +59,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E9EB441D1C2954EA00433477 /* CoreText.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -73,6 +76,7 @@
 		87527AA319D503A200D56994 = {
 			isa = PBXGroup;
 			children = (
+				E9EB441C1C2954EA00433477 /* CoreText.framework */,
 				87527AAE19D503A200D56994 /* DOPDropDownMenuDemo */,
 				87527AC819D503A200D56994 /* DOPDropDownMenuDemoTests */,
 				87527AAD19D503A200D56994 /* Products */,

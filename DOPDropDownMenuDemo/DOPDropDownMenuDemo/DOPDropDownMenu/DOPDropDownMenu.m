@@ -40,6 +40,13 @@
 @property (nonatomic, copy) NSArray *titles;
 @property (nonatomic, copy) NSArray *indicators;
 @property (nonatomic, copy) NSArray *bgLayers;
+
+/**
+ Is equal to customIndicatorView.frame.origin.x
+ @default 8
+**/
+@property (nonatomic, assign) CGFloat indicatorXOffset;
+
 @end
 
 
@@ -108,10 +115,28 @@
         CATextLayer *title = [self createTextLayerWithNSString:titleString withColor:self.textColor andPosition:titlePosition];
         [self.layer addSublayer:title];
         [tempTitles addObject:title];
-        //indicator
-        CAShapeLayer *indicator = [self createIndicatorWithColor:self.indicatorColor andPosition:CGPointMake(titlePosition.x + title.bounds.size.width / 2 + 8, self.frame.size.height / 2)];
-        [self.layer addSublayer:indicator];
-        [tempIndicators addObject:indicator];
+        
+        if (self.customIndicatorView) {
+            self.indicatorXOffset = self.customIndicatorView.frame.origin.x;
+            CALayer *layer = [CALayer layer];
+            CGRect rect = CGRectMake(titlePosition.x + (title.bounds.size.width/2)  + self.indicatorXOffset, self.customIndicatorView.frame.origin.y, self.customIndicatorView.frame.size.width, self.customIndicatorView.frame.size.height);
+            [layer setContents:(id)self.customIndicatorView.image.CGImage];
+            // Ici on set la size
+            [layer setFrame:rect];
+            // Ici on set la bonne position
+            [layer setPosition:CGPointMake(titlePosition.x + title.bounds.size.width / 2 + self.indicatorXOffset, self.customIndicatorView.frame.origin.y)];
+
+            [self.layer addSublayer:layer];
+            [tempIndicators addObject:layer];
+        }
+        else {
+#warning Faire mieux ?!
+            self.indicatorXOffset = 8;
+            //indicator
+            CAShapeLayer *indicator = [self createIndicatorWithColor:self.indicatorColor andPosition:CGPointMake(titlePosition.x + title.bounds.size.width / 2 + self.indicatorXOffset, self.frame.size.height / 2)];
+            [self.layer addSublayer:indicator];
+            [tempIndicators addObject:indicator];
+        }
     }
     _titles = [tempTitles copy];
     _indicators = [tempIndicators copy];
@@ -199,14 +224,12 @@
     CGSize size = [self calculateTitleSizeWithString:string];
     
     CATextLayer *layer = [CATextLayer new];
-    CGFloat sizeWidth = (size.width < (self.frame.size.width / _numOfMenu) - 25) ? size.width : self.frame.size.width / _numOfMenu - 25;
-    layer.bounds = CGRectMake(0, 0, sizeWidth, size.height);
+    layer.bounds = CGRectMake(0, 0, size.width, size.height);
     layer.string = string;
     layer.font = CTFontCreateWithName((__bridge CFStringRef)self.titleFont.fontName, self.titleFont.pointSize, NULL);
     layer.fontSize = self.titleFont.pointSize;
     layer.alignmentMode = kCAAlignmentCenter;
     layer.foregroundColor = color.CGColor;
-    
     layer.contentsScale = [[UIScreen mainScreen] scale];
     
     layer.position = point;
@@ -219,6 +242,7 @@
     NSDictionary *dic = @{NSFontAttributeName: self.titleFont};
 #warning magic number
     CGSize size = [string boundingRectWithSize:CGSizeMake(280, 0) options:NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:dic context:nil].size;
+    size.width = (size.width < (self.frame.size.width / _numOfMenu) - 25) ? size.width : self.frame.size.width / _numOfMenu - 25;
     return size;
 }
 
@@ -333,11 +357,15 @@
     complete();
 }
 
+#warning rename to resizeTitle ?
 - (void)animateTitle:(CATextLayer *)title show:(BOOL)show complete:(void(^)())complete {
     CGSize size = [self calculateTitleSizeWithString:title.string];
-    CGFloat sizeWidth = (size.width < (self.frame.size.width / _numOfMenu) - 25) ? size.width : self.frame.size.width / _numOfMenu - 25;
-    title.bounds = CGRectMake(0, 0, sizeWidth, size.height);
-    complete();
+
+    title.bounds = CGRectMake(0, 0, size.width, size.height);
+    if (complete) {
+        complete();
+    }
+
 }
 
 - (void)animateIdicator:(CAShapeLayer *)indicator background:(UIView *)background tableView:(UITableView *)tableView title:(CATextLayer *)title forward:(BOOL)forward complecte:(void(^)())complete{
@@ -418,7 +446,7 @@
     [(CALayer *)self.bgLayers[_currentSelectedMenudIndex] setBackgroundColor:[UIColor whiteColor].CGColor];
     
     CAShapeLayer *indicator = (CAShapeLayer *)_indicators[_currentSelectedMenudIndex];
-    indicator.position = CGPointMake(title.position.x + title.frame.size.width / 2 + 8, indicator.position.y);
+    indicator.position = CGPointMake(title.position.x + (title.frame.size.width/2)  +  self.indicatorXOffset, indicator.position.y);
 }
 
 - (void)dismiss {

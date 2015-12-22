@@ -57,6 +57,8 @@ typedef enum {
 @property (nonatomic, strong) UIColor *textColor;
 @property (nonatomic, strong) UIColor *separatorColor;
 
+@property (nonatomic, strong) UIImageView *customIndicatorView;
+
 @property (nonatomic, strong) UIFont *titleFont;
 
 @property (nonatomic, strong, readonly) UITableView *tableView;

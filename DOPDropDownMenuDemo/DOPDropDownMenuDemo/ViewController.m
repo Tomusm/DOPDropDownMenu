@@ -47,7 +47,12 @@
     DOPDropDownMenu *menu = [[DOPDropDownMenu alloc] initWithOrigin:CGPointMake(0, 64) andHeight:40];
     [menu setTitleFont:[UIFont fontWithName:@"Helvetica" size:12]];
     [menu setTextColor:[UIColor redColor]];
+    UIImageView *imageView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"productHeaderClose"]];
+    [imageView setContentMode:UIViewContentModeScaleAspectFit];
+    [imageView setFrame:CGRectMake(12, (menu.frame.size.height/2)-(7/2), 10, 7)];
     
+    [menu setCustomIndicatorView:imageView];
+   
     menu.dataSource = self;
     menu.delegate = self;
     

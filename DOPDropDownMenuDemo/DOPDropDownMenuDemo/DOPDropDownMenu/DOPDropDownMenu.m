@@ -114,13 +114,20 @@
 - (instancetype)initWithOrigin:(CGPoint)origin andHeight:(CGFloat)height {
     CGSize screenSize = [UIScreen mainScreen].bounds.size;
     self = [self initWithFrame:CGRectMake(origin.x, origin.y, screenSize.width, height)];
+    return self;
+}
+
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    CGSize screenSize = [UIScreen mainScreen].bounds.size;
     if (self) {
-        _origin = origin;
+        _origin = frame.origin;
         _currentSelectedMenudIndex = -1;
         _show = NO;
         
         //tableView init
-        _tableView = [[UITableView alloc] initWithFrame:CGRectMake(origin.x, self.frame.origin.y + self.frame.size.height, self.frame.size.width, 0) style:UITableViewStylePlain];
+        _tableView = [[UITableView alloc] initWithFrame:CGRectMake(frame.origin.x, frame.origin.y + frame.size.height, frame.size.width, 0) style:UITableViewStylePlain];
         _tableView.rowHeight = 38;
         _tableView.dataSource = self;
         _tableView.delegate = self;
@@ -131,14 +138,14 @@
         [self addGestureRecognizer:tapGesture];
         
         //background init and tapped
-        _backGroundView = [[UIView alloc] initWithFrame:CGRectMake(origin.x, origin.y, screenSize.width, screenSize.height)];
+        _backGroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, screenSize.height)];
         _backGroundView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.0];
         _backGroundView.opaque = NO;
         UIGestureRecognizer *gesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(backgroundTapped:)];
         [_backGroundView addGestureRecognizer:gesture];
         
         //add bottom shadow
-        UIView *bottomShadow = [[UIView alloc] initWithFrame:CGRectMake(0, self.frame.size.height-0.5, screenSize.width, 0.5)];
+        UIView *bottomShadow = [[UIView alloc] initWithFrame:CGRectMake(0, frame.size.height-0.5, frame.size.width, 0.5)];
         bottomShadow.backgroundColor = [UIColor lightGrayColor];
         [self addSubview:bottomShadow];
     }
@@ -287,18 +294,24 @@
 }
 
 - (void)animateTableView:(UITableView *)tableView show:(BOOL)show complete:(void(^)())complete {
+    CGFloat yStart = self.frame.origin.y + self.frame.size.height;
+    CGFloat yFinal = self.frame.origin.y + self.frame.size.height;
+    CGFloat tableViewHeight = ([tableView numberOfRowsInSection:0] > 5) ? (5 * tableView.rowHeight) : ([tableView numberOfRowsInSection:0] * tableView.rowHeight);
+    if (self.menuDirection != DOPDirectionDown) {
+        yStart = self.frame.origin.y;
+        yFinal = self.frame.origin.y-tableViewHeight;
+    }
+    
     if (show) {
-        tableView.frame = CGRectMake(self.origin.x, self.frame.origin.y + self.frame.size.height, self.frame.size.width, 0);
+        tableView.frame = CGRectMake(self.origin.x, yStart, self.frame.size.width, 0);
         [self.superview addSubview:tableView];
         
-        CGFloat tableViewHeight = ([tableView numberOfRowsInSection:0] > 5) ? (5 * tableView.rowHeight) : ([tableView numberOfRowsInSection:0] * tableView.rowHeight);
-        
         [UIView animateWithDuration:0.2 animations:^{
-            _tableView.frame = CGRectMake(self.origin.x, self.frame.origin.y + self.frame.size.height, self.frame.size.width, tableViewHeight);
+            _tableView.frame = CGRectMake(self.origin.x, yFinal, self.frame.size.width, tableViewHeight);
         }];
     } else {
         [UIView animateWithDuration:0.2 animations:^{
-            _tableView.frame = CGRectMake(self.origin.x, self.frame.origin.y + self.frame.size.height, self.frame.size.width, 0);
+            _tableView.frame = CGRectMake(self.origin.x, yStart, self.frame.size.width, 0);
         } completion:^(BOOL finished) {
             [tableView removeFromSuperview];
         }];

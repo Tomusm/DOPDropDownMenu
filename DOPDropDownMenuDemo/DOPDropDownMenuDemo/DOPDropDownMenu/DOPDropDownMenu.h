@@ -8,6 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+typedef enum {
+    DOPDirectionDown = 0,
+    DOPDirectionUp = 1
+} DOPDirection;
+
 @interface DOPIndexPath : NSObject
 
 @property (nonatomic, assign) NSInteger column;
@@ -46,6 +51,14 @@
 @property (nonatomic, strong) UIColor *indicatorColor;
 @property (nonatomic, strong) UIColor *textColor;
 @property (nonatomic, strong) UIColor *separatorColor;
+
+/**
+ * Define the menu showing direction
+ *
+ * @default DOPDirectionDown
+**/
+@property (nonatomic, assign) DOPDirection menuDirection;
+
 /**
  *  the width of menu will be set to screen width defaultly
  *
@@ -55,6 +68,9 @@
  *  @return menu
  */
 - (instancetype)initWithOrigin:(CGPoint)origin andHeight:(CGFloat)height;
+
+- (instancetype)initWithFrame:(CGRect)frame;
+
 - (NSString *)titleForRowAtIndexPath:(DOPIndexPath *)indexPath;
 
 //programmatically dismiss

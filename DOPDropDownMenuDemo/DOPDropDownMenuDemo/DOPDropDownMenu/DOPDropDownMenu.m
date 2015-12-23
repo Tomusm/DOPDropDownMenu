@@ -91,7 +91,7 @@
     for (int i = 0; i < _numOfMenu; i++) {
         //bgLayer
         CGPoint bgLayerPosition = CGPointMake((i+0.5)*bgLayerInterval, self.frame.size.height/2);
-        CALayer *bgLayer = [self createBgLayerWithColor:[UIColor whiteColor] andPosition:bgLayerPosition];
+        CALayer *bgLayer = [self createBgLayerWithColor:self.backgroundColor andPosition:bgLayerPosition];
         [self.layer addSublayer:bgLayer];
         [tempBgLayers addObject:bgLayer];
         //title
@@ -126,7 +126,6 @@
         _tableView.delegate = self;
         
         //self tapped
-        self.backgroundColor = [UIColor whiteColor];
         UIGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuTapped:)];
         [self addGestureRecognizer:tapGesture];
         
@@ -219,7 +218,7 @@
                     
                 }];
             }];
-            [(CALayer *)self.bgLayers[i] setBackgroundColor:[UIColor whiteColor].CGColor];
+            [(CALayer *)self.bgLayers[i] setBackgroundColor:self.backgroundColor.CGColor];
         }
     }
     
@@ -228,7 +227,7 @@
             _currentSelectedMenudIndex = tapIndex;
             _show = NO;
         }];
-        [(CALayer *)self.bgLayers[tapIndex] setBackgroundColor:[UIColor whiteColor].CGColor];
+        [(CALayer *)self.bgLayers[tapIndex] setBackgroundColor:self.backgroundColor.CGColor];
     } else {
         _currentSelectedMenudIndex = tapIndex;
         [_tableView reloadData];
@@ -244,7 +243,7 @@
     [self animateIdicator:_indicators[_currentSelectedMenudIndex] background:_backGroundView tableView:_tableView title:_titles[_currentSelectedMenudIndex] forward:NO complecte:^{
         _show = NO;
     }];
-    [(CALayer *)self.bgLayers[_currentSelectedMenudIndex] setBackgroundColor:[UIColor whiteColor].CGColor];
+    [(CALayer *)self.bgLayers[_currentSelectedMenudIndex] setBackgroundColor:self.backgroundColor.CGColor];
 }
 
 #pragma mark - animation method
@@ -378,7 +377,7 @@
     [self animateIdicator:_indicators[_currentSelectedMenudIndex] background:_backGroundView tableView:_tableView title:_titles[_currentSelectedMenudIndex] forward:NO complecte:^{
         _show = NO;
     }];
-    [(CALayer *)self.bgLayers[_currentSelectedMenudIndex] setBackgroundColor:[UIColor whiteColor].CGColor];
+    [(CALayer *)self.bgLayers[_currentSelectedMenudIndex] setBackgroundColor:self.backgroundColor.CGColor];
     
     CAShapeLayer *indicator = (CAShapeLayer *)_indicators[_currentSelectedMenudIndex];
     indicator.position = CGPointMake(title.position.x + title.frame.size.width / 2 + 8, indicator.position.y);

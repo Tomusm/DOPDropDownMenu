@@ -52,6 +52,8 @@
 **/
 @property (nonatomic, assign) CGFloat indicatorXOffset;
 
+@property (nonatomic, weak) UIView *originalSuperView;
+
 @end
 
 
@@ -345,25 +347,38 @@
 - (void)animateBackGroundView:(UIView *)view show:(BOOL)show complete:(void(^)())complete {
     if (self.showBackground) {
         if (show) {
-            [self.superview addSubview:view];
-            [view.superview addSubview:self];
+            self.originalSuperView = self.superview;
+            UIView *targetView = [[UIApplication sharedApplication] keyWindow];
+            [targetView addSubview:view];
             
+            self.frame = [self.superview convertRect:self.frame toView:targetView];
+            [targetView addSubview:self];
             [UIView animateWithDuration:0.2 animations:^{
                 view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.3];
             }];
+            
         } else {
             [UIView animateWithDuration:0.2 animations:^{
                 view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.0];
             } completion:^(BOOL finished) {
+                
+                self.frame = [self.superview convertRect:self.frame toView:self.originalSuperView];
+                [self.originalSuperView addSubview:self];
+                
+                self.originalSuperView = nil;
+                
                 [view removeFromSuperview];
+                
             }];
         }
     }
-
+    
     complete();
 }
 
 - (void)animateTableView:(UITableView *)tableView show:(BOOL)show complete:(void(^)())complete {
+    
+    UIView *targetView = [[UIApplication sharedApplication] keyWindow];
     CGFloat yStart = self.frame.origin.y + self.frame.size.height;
     CGFloat yFinal = self.frame.origin.y + self.frame.size.height;
     CGFloat tableViewRowHeight = tableView.rowHeight;
@@ -379,14 +394,15 @@
     
     if (show) {
         tableView.frame = CGRectMake(self.origin.x, yStart, self.frame.size.width, 0);
-        [self.superview addSubview:tableView];
+        tableView.frame = [self.superview convertRect:tableView.frame toView:targetView];
+        [targetView addSubview:tableView];
         
         [UIView animateWithDuration:0.2 animations:^{
-            _tableView.frame = CGRectMake(self.origin.x, yFinal, self.frame.size.width, tableViewHeight);
+            _tableView.frame = [self.superview convertRect:CGRectMake(self.origin.x, yFinal, self.frame.size.width, tableViewHeight) toView:targetView];
         }];
     } else {
         [UIView animateWithDuration:0.2 animations:^{
-            _tableView.frame = CGRectMake(self.origin.x, yStart, self.frame.size.width, 0);
+            _tableView.frame = [self.superview convertRect:CGRectMake(self.origin.x, yStart, self.frame.size.width, 0) toView:targetView];
         } completion:^(BOOL finished) {
             [tableView removeFromSuperview];
         }];

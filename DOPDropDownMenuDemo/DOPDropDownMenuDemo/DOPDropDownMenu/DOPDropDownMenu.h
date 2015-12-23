@@ -46,6 +46,17 @@
 @property (nonatomic, strong) UIColor *indicatorColor;
 @property (nonatomic, strong) UIColor *textColor;
 @property (nonatomic, strong) UIColor *separatorColor;
+
+/**
+* @default YES
+*/
+@property (nonatomic, assign) BOOL showBackground;
+
+/**
+* @default YES
+*/
+@property (nonatomic, assign) BOOL showBottomShadow;
+
 /**
  *  the width of menu will be set to screen width defaultly
  *

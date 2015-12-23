@@ -33,6 +33,8 @@
 @property (nonatomic, assign) CGPoint origin;
 @property (nonatomic, strong) UIView *backGroundView;
 @property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) UIView *bottomShadow;
+
 //data source
 @property (nonatomic, copy) NSArray *array;
 //layers array
@@ -110,6 +112,24 @@
     _bgLayers = [tempBgLayers copy];
 }
 
+- (void)setShowBottomShadow:(BOOL)showBottomShadow {
+    CGFloat alpha = 0;
+    if (showBottomShadow) {
+        alpha = 1;
+    }
+    [self.bottomShadow setAlpha:alpha];
+    _showBottomShadow = showBottomShadow;
+}
+
+- (void)setShowBackground:(BOOL)showBackground {
+    CGFloat alpha = 0;
+    if (showBackground) {
+        alpha = 1;
+    }
+    [self.backGroundView setAlpha:alpha];
+    _showBackground = showBackground;
+}
+
 #pragma mark - init method
 - (instancetype)initWithOrigin:(CGPoint)origin andHeight:(CGFloat)height {
     CGSize screenSize = [UIScreen mainScreen].bounds.size;
@@ -138,9 +158,12 @@
         [_backGroundView addGestureRecognizer:gesture];
         
         //add bottom shadow
-        UIView *bottomShadow = [[UIView alloc] initWithFrame:CGRectMake(0, self.frame.size.height-0.5, screenSize.width, 0.5)];
-        bottomShadow.backgroundColor = [UIColor lightGrayColor];
-        [self addSubview:bottomShadow];
+        _bottomShadow = [[UIView alloc] initWithFrame:CGRectMake(0, self.frame.size.height-0.5, screenSize.width, 0.5)];
+        _bottomShadow.backgroundColor = [UIColor lightGrayColor];
+        [self addSubview:_bottomShadow];
+        
+        _showBackground = YES;
+        _showBottomShadow = YES;
     }
     return self;
 }
@@ -269,20 +292,23 @@
 }
 
 - (void)animateBackGroundView:(UIView *)view show:(BOOL)show complete:(void(^)())complete {
-    if (show) {
-        [self.superview addSubview:view];
-        [view.superview addSubview:self];
-        
-        [UIView animateWithDuration:0.2 animations:^{
-            view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.3];
-        }];
-    } else {
-        [UIView animateWithDuration:0.2 animations:^{
-            view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.0];
-        } completion:^(BOOL finished) {
-            [view removeFromSuperview];
-        }];
+    if (self.showBackground) {
+        if (show) {
+            [self.superview addSubview:view];
+            [view.superview addSubview:self];
+            
+            [UIView animateWithDuration:0.2 animations:^{
+                view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.3];
+            }];
+        } else {
+            [UIView animateWithDuration:0.2 animations:^{
+                view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.0];
+            } completion:^(BOOL finished) {
+                [view removeFromSuperview];
+            }];
+        }
     }
+
     complete();
 }
 

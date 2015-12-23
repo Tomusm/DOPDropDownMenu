@@ -76,6 +76,16 @@ typedef enum {
 @property (nonatomic, assign) DOPDirection menuDirection;
 
 /**
+* @default YES
+*/
+@property (nonatomic, assign) BOOL showBackground;
+
+/**
+* @default YES
+*/
+@property (nonatomic, assign) BOOL showBottomShadow;
+
+/**
  *  the width of menu will be set to screen width defaultly
  *
  *  @param origin the origin of this view's frame

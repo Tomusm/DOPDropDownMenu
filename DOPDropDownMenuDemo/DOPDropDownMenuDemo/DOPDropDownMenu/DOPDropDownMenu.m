@@ -506,7 +506,14 @@
 
 - (void)confiMenuWithSelectRow:(NSInteger)row {
     CATextLayer *title = (CATextLayer *)_titles[_currentSelectedMenudIndex];
-    title.string = [self.dataSource menu:self titleForRowAtIndexPath:[DOPIndexPath indexPathWithCol:self.currentSelectedMenudIndex row:row]];
+    // If the placeHolder is not nil we use it
+    if ([_dataSource respondsToSelector:@selector(menu:placeHolderForColumn:)] && self.shouldShowPlaceholderInsteadOfSelection) {
+        title.string = [self.dataSource menu:self placeHolderForColumn:self.currentSelectedMenudIndex];
+    }
+    else {
+            title.string = [self.dataSource menu:self titleForRowAtIndexPath:[DOPIndexPath indexPathWithCol:self.currentSelectedMenudIndex row:row]];
+    }
+
     
     [self animateIdicator:_indicators[_currentSelectedMenudIndex] background:_backGroundView tableView:_tableView title:_titles[_currentSelectedMenudIndex] forward:NO complecte:^{
         _show = NO;

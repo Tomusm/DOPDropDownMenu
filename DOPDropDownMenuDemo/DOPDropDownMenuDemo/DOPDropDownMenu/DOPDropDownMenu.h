@@ -85,6 +85,8 @@ typedef enum {
 */
 @property (nonatomic, assign) BOOL showBottomShadow;
 
+@property (nonatomic, assign) BOOL shouldShowPlaceholderInsteadOfSelection;
+
 /**
  *  the width of menu will be set to screen width defaultly
  *

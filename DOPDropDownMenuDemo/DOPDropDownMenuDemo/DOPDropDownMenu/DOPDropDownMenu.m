@@ -158,6 +158,20 @@
     _bgLayers = [tempBgLayers copy];
 }
 
+-(void)layoutSubviews {
+    [super layoutSubviews];
+   // [self confiMenuWithSelectRow:0];
+   /* for (CALayer *layer in self.titles) {
+        layer.frame = self.bounds;
+    }*/
+    /*for (CALayer *layer in self.indicators) {
+        layer.frame = self.bounds;
+    }*/
+    for (CALayer *layer in self.bgLayers) {
+        layer.frame = self.bounds;
+    }
+}
+
 - (void)setShowBottomShadow:(BOOL)showBottomShadow {
     CGFloat alpha = 0;
     if (showBottomShadow) {
@@ -351,6 +365,7 @@
             [targetView addSubview:view];
             
             self.frame = [self.superview convertRect:self.frame toView:targetView];
+            self.origin = [targetView convertPoint:self.origin fromView:self.superview];
             [targetView addSubview:self];
             [UIView animateWithDuration:0.2 animations:^{
                 view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.3];
@@ -391,17 +406,18 @@
         yFinal = self.frame.origin.y-tableViewHeight;
     }
     
+  //  CGPoint origin = [targetView convertPoint:self.origin fromView:self.superview];
     if (show) {
-        tableView.frame = CGRectMake(self.origin.x, yStart, self.frame.size.width, 0);
-        tableView.frame = [self.superview convertRect:tableView.frame toView:targetView];
+        tableView.frame = CGRectMake(self.frame.origin.x, yStart, self.frame.size.width, 0);
+       // tableView.frame = [targetView convertRect:tableView.frame fromView:self.originalSuperView];
         [targetView addSubview:tableView];
         
         [UIView animateWithDuration:0.2 animations:^{
-            _tableView.frame = [self.superview convertRect:CGRectMake(self.origin.x, yFinal, self.frame.size.width, tableViewHeight) toView:targetView];
+            _tableView.frame = /*[self.originalSuperView convertRect:*/CGRectMake(self.frame.origin.x, yFinal, self.frame.size.width, tableViewHeight)/* toView:targetView]*/;
         }];
     } else {
         [UIView animateWithDuration:0.2 animations:^{
-            _tableView.frame = [self.superview convertRect:CGRectMake(self.origin.x, yStart, self.frame.size.width, 0) toView:targetView];
+            _tableView.frame = /*[self.originalSuperView convertRect:*/CGRectMake(self.frame.origin.x, yStart, self.frame.size.width, 0)/* toView:targetView]*/;
         } completion:^(BOOL finished) {
             [tableView removeFromSuperview];
         }];

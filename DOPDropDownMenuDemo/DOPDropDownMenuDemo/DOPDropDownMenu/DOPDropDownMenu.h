@@ -68,6 +68,8 @@ typedef enum {
 
 @property (nonatomic, strong, readonly) UITableView *tableView;
 
+@property (nonatomic, assign) CGFloat indicatorXOffset;
+
 /**
  * Define the menu showing direction
  *

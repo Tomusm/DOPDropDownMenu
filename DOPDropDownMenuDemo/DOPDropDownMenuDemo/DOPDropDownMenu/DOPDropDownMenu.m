@@ -46,11 +46,7 @@
 @property (nonatomic, copy) NSArray *indicators;
 @property (nonatomic, copy) NSArray *bgLayers;
 
-/**
- Is equal to customIndicatorView.frame.origin.x
- @default 8
-**/
-@property (nonatomic, assign) CGFloat indicatorXOffset;
+
 
 @property (nonatomic, weak) UIView *originalSuperView;
 
@@ -146,9 +142,12 @@
         }
         else {
 #warning Faire mieux ?!
-            self.indicatorXOffset = 8;
+            //self.indicatorXOffset = 8;
+            //CGFloat magicNumber = 0;
+            
             //indicator
-            CAShapeLayer *indicator = [self createIndicatorWithColor:self.indicatorColor andPosition:CGPointMake(titlePosition.x + title.bounds.size.width / 2 + self.indicatorXOffset, self.frame.size.height / 2)];
+            CGPoint position = [self indicatorPositionForY:self.frame.size.height / 2];
+            CAShapeLayer *indicator = [self createIndicatorWithColor:self.indicatorColor andPosition:position];
             [self.layer addSublayer:indicator];
             [tempIndicators addObject:indicator];
         }
@@ -161,7 +160,7 @@
 -(void)layoutSubviews {
     [super layoutSubviews];
    // [self confiMenuWithSelectRow:0];
-   /* for (CALayer *layer in self.titles) {
+    /*for (CALayer *layer in self.titles) {
         layer.frame = self.bounds;
     }*/
     /*for (CALayer *layer in self.indicators) {
@@ -290,8 +289,9 @@
 {
     NSDictionary *dic = @{NSFontAttributeName: self.titleFont};
 #warning magic number
-    CGSize size = [string boundingRectWithSize:CGSizeMake(280, 0) options:NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:dic context:nil].size;
-    size.width = (size.width < (self.frame.size.width / _numOfMenu) - 25) ? size.width : self.frame.size.width / _numOfMenu - 25;
+    CGSize size = [string boundingRectWithSize:CGSizeMake(self.bounds.size.width, 0) options:NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:dic context:nil].size;
+    CGFloat offset = 5;
+    size.width = (size.width < (self.frame.size.width / _numOfMenu) - 25) ? size.width+offset : self.frame.size.width / _numOfMenu - 25;
     return size;
 }
 
@@ -417,6 +417,10 @@
         }];
     } else {
         [UIView animateWithDuration:0.2 animations:^{
+            CGRect frame = _tableView.frame;
+            frame.size.height = 0;
+            
+            
             _tableView.frame = /*[self.originalSuperView convertRect:*/CGRectMake(self.frame.origin.x, yStart, self.frame.size.width, 0)/* toView:targetView]*/;
         } completion:^(BOOL finished) {
             [tableView removeFromSuperview];
@@ -484,6 +488,7 @@
         cell.backgroundColor = [UIColor whiteColor];
         cell.textLabel.font = [UIFont systemFontOfSize:14.0];
         cell.separatorInset = UIEdgeInsetsZero;
+        cell.textLabel.textAlignment = NSTextAlignmentCenter;
         
         if ([cell.textLabel.text isEqualToString: [(CATextLayer *)[_titles objectAtIndex:_currentSelectedMenudIndex] string]]) {
             cell.backgroundColor = [UIColor colorWithWhite:0.9 alpha:1.0];
@@ -521,7 +526,7 @@
     [(CALayer *)self.bgLayers[_currentSelectedMenudIndex] setBackgroundColor:self.backgroundColor.CGColor];
     
     CAShapeLayer *indicator = (CAShapeLayer *)_indicators[_currentSelectedMenudIndex];
-    indicator.position = CGPointMake(title.position.x + (title.frame.size.width/2)  +  self.indicatorXOffset, indicator.position.y);
+    indicator.position =[self indicatorPositionForY:indicator.position.y];
 }
 
 - (void)dismiss {
@@ -529,6 +534,8 @@
 }
 
 
-
+- (CGPoint)indicatorPositionForY:(CGFloat)yPoint {
+    return CGPointMake(self.bounds.size.width-self.indicatorXOffset, yPoint);
+}
 
 @end
